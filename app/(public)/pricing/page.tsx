@@ -21,7 +21,7 @@ export default function PricingPage() {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Simple pricing</h1>
           <p className="text-gray-600 text-lg">
-            Less than the interest you'll pay if you miss a single deadline.
+            Less than the interest you&apos;ll pay if you miss a single deadline.
           </p>
         </div>
 

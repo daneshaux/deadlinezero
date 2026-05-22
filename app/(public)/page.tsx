@@ -29,7 +29,7 @@ export default function HomePage() {
       {/* Hero */}
       <section className="max-w-4xl mx-auto px-6 pt-24 pb-16 text-center">
         <h1 className="text-5xl font-bold tracking-tight text-gray-900 mb-6 leading-tight">
-          Miss your "no interest" deadline by one day.
+          Miss your &quot;no interest&quot; deadline by one day.
           <br />
           <span className="text-red-600">Pay 27% interest on every dollar.</span>
         </h1>
@@ -85,7 +85,7 @@ export default function HomePage() {
       <section className="py-20 text-center">
         <div className="max-w-xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Find out what you're really risking
+            Find out what you&apos;re really risking
           </h2>
           <p className="text-gray-600 mb-8">
             The free calculator takes 30 seconds. No signup required.

@@ -15,7 +15,7 @@ export default function CalculatorPage() {
             Deferred Interest Calculator
           </h1>
           <p className="text-lg text-gray-600">
-            Find out exactly how much you'll owe if you miss your "no interest if paid in full"
+            Find out exactly how much you&apos;ll owe if you miss your &quot;no interest if paid in full&quot;
             deadline — and what to pay each month to avoid it.
           </p>
         </div>
