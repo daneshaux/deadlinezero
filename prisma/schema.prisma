@@ -1,0 +1,190 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum SubscriptionTier {
+  FREE
+  PREMIUM
+}
+
+enum DealStatus {
+  ACTIVE
+  PAID_OFF
+  EXPIRED_MISSED
+  ARCHIVED
+}
+
+enum AlertType {
+  DAYS_90
+  DAYS_60
+  DAYS_30
+  DAYS_14
+  DAYS_7
+  MISSED_DEADLINE
+}
+
+enum IssuingBank {
+  SYNCHRONY
+  CARECREDIT
+  COMENITY
+  CITIBANK
+  TD_RETAIL
+  WELLS_FARGO_RETAIL
+  OTHER
+}
+
+model User {
+  id                    String           @id @default(cuid())
+  email                 String           @unique
+  name                  String?
+  image                 String?
+  subscriptionTier      SubscriptionTier @default(FREE)
+  stripeCustomerId      String?          @unique
+  stripeSubscriptionId  String?          @unique
+  subscriptionExpiresAt DateTime?
+  plaidAccessToken      String?
+  plaidItemId           String?
+  plaidLinkedAt         DateTime?
+  emailAlerts           Boolean          @default(true)
+  alertLeadDays         Int[]            @default([90, 60, 30, 14, 7])
+  timezone              String           @default("America/New_York")
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+
+  deals    PromoDeal[]
+  alerts   Alert[]
+  sessions Session[]
+  accounts Account[]
+
+  @@index([email])
+  @@index([stripeCustomerId])
+}
+
+model PromoDeal {
+  id                      String      @id @default(cuid())
+  userId                  String
+  merchantName            String
+  description             String?
+  issuingBank             IssuingBank @default(OTHER)
+  originalPurchaseAmountCents  Int
+  currentBalanceCents          Int
+  minimumPaymentCents          Int?
+  regularAprBps                Int
+  promoStartDate          DateTime
+  promoDeadline           DateTime
+  promoDescription        String?
+  status                  DealStatus  @default(ACTIVE)
+  paidOffAt               DateTime?
+  missedDeadlineAt        DateTime?
+  plaidAccountId          String?
+  plaidTransactionId      String?
+  lastSyncedAt            DateTime?
+  cachedMonthlyPaymentNeededCents  Int?
+  cachedDaysRemaining              Int?
+  cachedRetroInterestExposureCents Int?
+  cacheUpdatedAt                   DateTime?
+  createdAt               DateTime    @default(now())
+  updatedAt               DateTime    @updatedAt
+
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  alerts         Alert[]
+  paymentHistory PaymentRecord[]
+  balanceHistory BalanceSnapshot[]
+
+  @@index([userId])
+  @@index([promoDeadline])
+  @@index([status])
+  @@index([userId, status])
+}
+
+model Alert {
+  id           String    @id @default(cuid())
+  userId       String
+  dealId       String
+  alertType    AlertType
+  scheduledFor DateTime
+  sentAt       DateTime?
+  balanceAtAlertCents        Int
+  monthlyPaymentNeededCents  Int
+  retroInterestExposureCents Int
+  daysRemainingAtAlert       Int
+  emailMessageId String?
+  createdAt    DateTime  @default(now())
+
+  user User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deal PromoDeal @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@unique([dealId, alertType])
+  @@index([userId])
+  @@index([sentAt])
+  @@index([scheduledFor])
+}
+
+model PaymentRecord {
+  id                 String   @id @default(cuid())
+  dealId             String
+  amountCents        Int
+  paymentDate        DateTime
+  note               String?
+  isManual           Boolean  @default(true)
+  plaidTransactionId String?
+  createdAt          DateTime @default(now())
+
+  deal PromoDeal @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@index([dealId])
+  @@index([paymentDate])
+}
+
+model BalanceSnapshot {
+  id           String   @id @default(cuid())
+  dealId       String
+  balanceCents Int
+  snapshotDate DateTime
+  source       String
+  createdAt    DateTime @default(now())
+
+  deal PromoDeal @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@index([dealId])
+  @@index([snapshotDate])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
