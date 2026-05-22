@@ -1,3 +1,6 @@
 export { calculateMonthlyPaymentNeeded } from './monthly-payment'
 export { calculateRetroInterestExposure } from './retro-interest'
 export { daysUntilDeadline } from './days-remaining'
+export { generatePayoffSchedule } from './payoff-schedule'
+export type { PayoffMonth } from './payoff-schedule'
+export { updateDealCachedFields } from './cache-fields'
