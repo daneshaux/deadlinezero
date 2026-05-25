@@ -9,24 +9,29 @@ export default async function SettingsPage() {
   const user = await db.user.findUniqueOrThrow({ where: { id: session.user.id } })
 
   return (
-    <div className="max-w-xl">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Settings</h1>
-      <div className="bg-white border rounded-xl p-6 space-y-4">
-        <div>
-          <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Email</p>
-          <p className="font-medium text-gray-900">{user.email}</p>
+    <div className="p-4 sm:p-6 lg:p-8">
+      <h2 className="text-[24px] font-bold text-white mb-6">Settings</h2>
+
+      <div className="dz-glass-card rounded-[10px] p-4 flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
+          <span className="text-[14px] text-[#A1B7E7]">Email</span>
+          <span className="text-[16px] text-white">{user.email}</span>
         </div>
-        <div>
-          <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Alert lead days</p>
-          <p className="font-medium text-gray-900">{user.alertLeadDays.join(', ')} days before deadline</p>
+        <div className="flex flex-col gap-2">
+          <span className="text-[14px] text-[#A1B7E7]">Alert lead days</span>
+          <span className="text-[16px] text-white">
+            {user.alertLeadDays.join(', ')} days before deadline
+          </span>
         </div>
-        <div>
-          <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Email alerts</p>
-          <p className="font-medium text-gray-900">{user.emailAlerts ? 'Enabled' : 'Disabled'}</p>
+        <div className="flex flex-col gap-2">
+          <span className="text-[14px] text-[#A1B7E7]">Email Alerts</span>
+          <span className="text-[16px] text-white">
+            {user.emailAlerts ? 'Enabled' : 'Disabled'}
+          </span>
         </div>
-        <div>
-          <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Timezone</p>
-          <p className="font-medium text-gray-900">{user.timezone}</p>
+        <div className="flex flex-col gap-2">
+          <span className="text-[14px] text-[#A1B7E7]">Timezone</span>
+          <span className="text-[16px] text-white">{user.timezone}</span>
         </div>
       </div>
     </div>

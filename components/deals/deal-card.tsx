@@ -1,64 +1,99 @@
 import Link from 'next/link'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { PromoDeal } from '@prisma/client'
 
-function urgencyBadge(daysRemaining: number | null) {
+function urgencyPill(daysRemaining: number | null) {
   if (daysRemaining === null || daysRemaining === undefined) return null
-  if (daysRemaining <= 0) return <Badge variant="destructive">Overdue</Badge>
-  if (daysRemaining <= 14) return <Badge variant="destructive">{daysRemaining}d left</Badge>
-  if (daysRemaining <= 30) return <Badge className="bg-orange-500 text-white">{daysRemaining}d left</Badge>
-  if (daysRemaining <= 90) return <Badge className="bg-yellow-500 text-white">{daysRemaining}d left</Badge>
-  return <Badge variant="secondary">{daysRemaining}d left</Badge>
+
+  let label: string
+  let cls: string
+
+  if (daysRemaining <= 0) {
+    label = 'Overdue'
+    cls = 'bg-[rgba(239,68,68,0.25)] text-red-400'
+  } else if (daysRemaining <= 30) {
+    label = `${daysRemaining} days left`
+    cls = 'bg-[rgba(239,68,68,0.2)] text-red-400'
+  } else if (daysRemaining <= 90) {
+    label = `${daysRemaining} days left`
+    cls = 'bg-[rgba(241,248,107,0.2)] text-white'
+  } else {
+    label = `${daysRemaining} days left`
+    cls = 'bg-[rgba(37,99,235,0.2)] text-white'
+  }
+
+  return (
+    <span className={`${cls} px-2 py-0.5 rounded-full text-[14px] whitespace-nowrap shrink-0`}>
+      {label}
+    </span>
+  )
 }
 
 export function DealCard({ deal }: { deal: PromoDeal }) {
   const balance = (deal.currentBalanceCents / 100).toFixed(2)
-  const monthly = deal.cachedMonthlyPaymentNeededCents != null
-    ? `$${(deal.cachedMonthlyPaymentNeededCents / 100).toFixed(2)}/mo`
-    : '—'
-  const retroInterest = deal.cachedRetroInterestExposureCents != null
-    ? `$${(deal.cachedRetroInterestExposureCents / 100).toFixed(2)}`
-    : '—'
+  const monthly =
+    deal.cachedMonthlyPaymentNeededCents != null
+      ? `$${(deal.cachedMonthlyPaymentNeededCents / 100).toFixed(2)}/mo`
+      : '—'
+  const retroInterest =
+    deal.cachedRetroInterestExposureCents != null
+      ? `$${(deal.cachedRetroInterestExposureCents / 100).toFixed(2)}`
+      : '—'
   const progress =
     deal.originalPurchaseAmountCents > 0
       ? Math.round((1 - deal.currentBalanceCents / deal.originalPurchaseAmountCents) * 100)
       : 0
+  const progressPct = Math.min(100, Math.max(0, progress))
 
   return (
-    <Link href={`/dashboard/deals/${deal.id}`}>
-      <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
-        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-          <CardTitle className="text-lg truncate">{deal.merchantName}</CardTitle>
-          {urgencyBadge(deal.cachedDaysRemaining)}
-        </CardHeader>
-        <CardContent className="space-y-3">
+    <Link href={`/dashboard/deals/${deal.id}`} className="block">
+      <div className="dz-glass-card border border-[#223661] rounded-[10px] px-6 py-4 flex flex-col gap-2 hover:border-[#2563EB]/50 transition-colors cursor-pointer">
+        {/* Card body */}
+        <div className="flex flex-col gap-4">
+          {/* Merchant name + days pill */}
+          <div className="flex items-start justify-between gap-4">
+            <span className="text-[20px] font-bold text-white leading-normal">
+              {deal.merchantName}
+            </span>
+            {urgencyPill(deal.cachedDaysRemaining)}
+          </div>
+
+          {/* Description */}
           {deal.description && (
-            <p className="text-sm text-gray-500 truncate">{deal.description}</p>
+            <p className="text-[16px] font-normal text-white">{deal.description}</p>
           )}
-          <div>
-            <div className="flex justify-between text-xs text-gray-500 mb-1">
-              <span>Progress</span>
-              <span>{progress}% paid</span>
+
+          {/* Progress section */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between text-[16px]">
+              <span className="text-[#A1B7E7]">Progress</span>
+              <span className="text-white">{progress}% paid off</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="w-full bg-[rgba(96,100,113,0.2)] rounded-full h-3">
               <div
-                className="bg-green-500 h-2 rounded-full transition-all"
-                style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+                className="bg-[#10B981] h-3 rounded-full transition-all"
+                style={{ width: `${progressPct}%` }}
               />
             </div>
+            <div className="flex items-center justify-between text-[16px] text-white">
+              <span>
+                Balance: <strong>${balance}</strong>
+              </span>
+              <span>
+                Need: <strong>{monthly}</strong>
+              </span>
+            </div>
           </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Balance: <strong>${balance}</strong></span>
-            <span className="text-gray-600">Need: <strong>{monthly}</strong></span>
-          </div>
-          <div className="pt-1 border-t">
-            <p className="text-sm text-red-600 font-medium">
-              Interest if missed: {retroInterest}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-[#223661] my-1" />
+
+        {/* Interest if missed */}
+        <p className="text-[16px] text-white">
+          Interest if missed:{' '}
+          <strong className="text-[#F86B6B]">{retroInterest}</strong>
+        </p>
+      </div>
     </Link>
   )
 }

@@ -2,9 +2,15 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+
+const inputCls =
+  'bg-transparent border-[#223661] text-white placeholder:text-[#A1B7E7]/50 ' +
+  'focus-visible:ring-[#2563EB] focus-visible:border-[#2563EB] rounded-[10px] ' +
+  '[color-scheme:dark] h-10'
+
+const labelCls = 'text-[16px] font-normal text-white'
 
 export default function LogPaymentPage({ params }: { params: { id: string } }) {
   const router = useRouter()
@@ -40,29 +46,54 @@ export default function LogPaymentPage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="max-w-md">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Log a payment</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-md p-3 text-sm text-red-700">
-            {error}
+    <div className="p-4 sm:p-8 lg:p-8">
+      <div className="max-w-md">
+        <h2 className="text-[24px] font-bold text-white mb-6">Log a payment</h2>
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+          {error && (
+            <div className="bg-red-900/30 border border-red-500/40 rounded-[10px] px-4 py-3 text-[14px] text-red-300">
+              {error}
+            </div>
+          )}
+
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="amount" className={labelCls}>
+              Amount paid ($)
+            </Label>
+            <Input
+              id="amount"
+              name="amount"
+              type="number"
+              step="0.01"
+              min="0.01"
+              required
+              placeholder="105.00"
+              className={inputCls}
+            />
           </div>
-        )}
-        <div>
-          <Label htmlFor="amount">Amount paid ($)</Label>
-          <Input
-            id="amount" name="amount" type="number" step="0.01" min="0.01" required
-            placeholder="105.00"
-          />
-        </div>
-        <div>
-          <Label htmlFor="note">Note (optional)</Label>
-          <Input id="note" name="note" placeholder="Monthly payment, extra payment…" />
-        </div>
-        <Button type="submit" disabled={loading}>
-          {loading ? 'Saving…' : 'Log payment'}
-        </Button>
-      </form>
+
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="note" className={labelCls}>
+              Note (optional)
+            </Label>
+            <Input
+              id="note"
+              name="note"
+              placeholder="Monthly payment, extra payment…"
+              className={inputCls}
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full sm:w-[450px] sm:mx-auto bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-60 text-[16px] font-semibold text-white rounded-[10px] transition-colors h-10"
+          >
+            {loading ? 'Saving…' : 'Log payment'}
+          </button>
+        </form>
+      </div>
     </div>
   )
 }

@@ -2,10 +2,15 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 interface DealFormProps {
   dealId?: string
@@ -16,11 +21,18 @@ interface DealFormProps {
     originalPurchaseAmountCents?: number
     currentBalanceCents?: number
     regularAprBps?: number
-    promoStartDate?: string  // ISO string
-    promoDeadline?: string   // ISO string
+    promoStartDate?: string
+    promoDeadline?: string
     promoDescription?: string
   }
 }
+
+const inputCls =
+  'bg-transparent border-[#223661] text-white placeholder:text-[#A1B7E7]/50 ' +
+  'focus-visible:ring-[#2563EB] focus-visible:border-[#2563EB] rounded-[10px] ' +
+  '[color-scheme:dark] h-10'
+
+const labelCls = 'text-[16px] font-normal text-white'
 
 export function DealForm({ dealId, initialValues }: DealFormProps) {
   const router = useRouter()
@@ -59,7 +71,9 @@ export function DealForm({ dealId, initialValues }: DealFormProps) {
     if (!res.ok) {
       const data = await res.json().catch(() => ({}))
       if (res.status === 403) {
-        setError('You\'ve reached the 2-deal limit on the free plan. Upgrade to Premium to add more deals.')
+        setError(
+          "You've reached the 2-deal limit on the free plan. Upgrade to Premium to add more deals."
+        )
       } else {
         setError(data.error?.message ?? 'Something went wrong. Please try again.')
       }
@@ -75,106 +89,193 @@ export function DealForm({ dealId, initialValues }: DealFormProps) {
   const iv = initialValues ?? {}
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-lg">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-md p-3 text-sm text-red-700">
+        <div className="bg-red-900/30 border border-red-500/40 rounded-[10px] px-4 py-3 text-[14px] text-red-300">
           {error}
         </div>
       )}
 
-      <div>
-        <Label htmlFor="merchantName">Merchant name *</Label>
+      {/* Merchant name */}
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="merchantName" className={labelCls}>
+          Merchant name *
+        </Label>
         <Input
-          id="merchantName" name="merchantName" required
+          id="merchantName"
+          name="merchantName"
+          required
           defaultValue={iv.merchantName}
           placeholder="Best Buy, Ashley Furniture, CareCredit…"
+          className={inputCls}
         />
       </div>
 
-      <div>
-        <Label htmlFor="description">Description (optional)</Label>
+      {/* Description */}
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="description" className={labelCls}>
+          Description (optional)
+        </Label>
         <Input
-          id="description" name="description"
+          id="description"
+          name="description"
           defaultValue={iv.description}
           placeholder="65-inch TV, living room set, root canal…"
+          className={inputCls}
         />
       </div>
 
-      <div>
-        <Label htmlFor="issuingBank">Issuing bank</Label>
+      {/* Issuing bank */}
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="issuingBank" className={labelCls}>
+          Issuing bank
+        </Label>
         <Select name="issuingBank" defaultValue={iv.issuingBank ?? 'OTHER'}>
-          <SelectTrigger id="issuingBank">
+          <SelectTrigger
+            id="issuingBank"
+            className="h-10 bg-transparent border-[#223661] text-white focus:ring-[#2563EB] focus:border-[#2563EB] rounded-[10px] text-[16px] [&>svg]:text-[#A1B7E7]"
+          >
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="SYNCHRONY">Synchrony</SelectItem>
-            <SelectItem value="CARECREDIT">CareCredit</SelectItem>
-            <SelectItem value="COMENITY">Comenity</SelectItem>
-            <SelectItem value="CITIBANK">Citibank</SelectItem>
-            <SelectItem value="TD_RETAIL">TD Retail</SelectItem>
-            <SelectItem value="WELLS_FARGO_RETAIL">Wells Fargo Retail</SelectItem>
-            <SelectItem value="OTHER">Other</SelectItem>
+          <SelectContent className="bg-[#0B1020] border-[#223661]">
+            {[
+              ['SYNCHRONY', 'Synchrony'],
+              ['CARECREDIT', 'CareCredit'],
+              ['COMENITY', 'Comenity'],
+              ['CITIBANK', 'Citibank'],
+              ['TD_RETAIL', 'TD Retail'],
+              ['WELLS_FARGO_RETAIL', 'Wells Fargo Retail'],
+              ['OTHER', 'Other'],
+            ].map(([value, label]) => (
+              <SelectItem
+                key={value}
+                value={value}
+                className="text-white focus:bg-[#223661] focus:text-white cursor-pointer"
+              >
+                {label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="originalAmount">Original amount ($) *</Label>
+      {/* Original amount + Current balance */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="originalAmount" className={labelCls}>
+            Original amount ($) *
+          </Label>
           <Input
-            id="originalAmount" name="originalAmount" type="number" step="0.01" min="0.01" required
-            defaultValue={iv.originalPurchaseAmountCents != null ? (iv.originalPurchaseAmountCents / 100).toFixed(2) : ''}
+            id="originalAmount"
+            name="originalAmount"
+            type="number"
+            step="0.01"
+            min="0.01"
+            required
+            defaultValue={
+              iv.originalPurchaseAmountCents != null
+                ? (iv.originalPurchaseAmountCents / 100).toFixed(2)
+                : ''
+            }
             placeholder="1200.00"
+            className={inputCls}
           />
         </div>
-        <div>
-          <Label htmlFor="currentBalance">Current balance ($) *</Label>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="currentBalance" className={labelCls}>
+            Current balance ($) *
+          </Label>
           <Input
-            id="currentBalance" name="currentBalance" type="number" step="0.01" min="0" required
-            defaultValue={iv.currentBalanceCents != null ? (iv.currentBalanceCents / 100).toFixed(2) : ''}
+            id="currentBalance"
+            name="currentBalance"
+            type="number"
+            step="0.01"
+            min="0"
+            required
+            defaultValue={
+              iv.currentBalanceCents != null
+                ? (iv.currentBalanceCents / 100).toFixed(2)
+                : ''
+            }
             placeholder="840.00"
+            className={inputCls}
           />
         </div>
       </div>
 
-      <div>
-        <Label htmlFor="apr">APR (%) *</Label>
+      {/* APR */}
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="apr" className={labelCls}>
+          APR (%) *
+        </Label>
         <Input
-          id="apr" name="apr" type="number" step="0.01" min="0.01" max="100" required
-          defaultValue={iv.regularAprBps != null ? (iv.regularAprBps / 100).toFixed(2) : ''}
+          id="apr"
+          name="apr"
+          type="number"
+          step="0.01"
+          min="0.01"
+          max="100"
+          required
+          defaultValue={
+            iv.regularAprBps != null ? (iv.regularAprBps / 100).toFixed(2) : ''
+          }
           placeholder="26.99"
+          className={inputCls}
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="promoStartDate">Purchase date *</Label>
+      {/* Purchase date + Promo deadline */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="promoStartDate" className={labelCls}>
+            Purchase date *
+          </Label>
           <Input
-            id="promoStartDate" name="promoStartDate" type="date" required
+            id="promoStartDate"
+            name="promoStartDate"
+            type="date"
+            required
             defaultValue={iv.promoStartDate ? iv.promoStartDate.slice(0, 10) : ''}
+            className={inputCls}
           />
         </div>
-        <div>
-          <Label htmlFor="promoDeadline">Promo deadline *</Label>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="promoDeadline" className={labelCls}>
+            Promo deadline *
+          </Label>
           <Input
-            id="promoDeadline" name="promoDeadline" type="date" required
+            id="promoDeadline"
+            name="promoDeadline"
+            type="date"
+            required
             defaultValue={iv.promoDeadline ? iv.promoDeadline.slice(0, 10) : ''}
+            className={inputCls}
           />
         </div>
       </div>
 
-      <div>
-        <Label htmlFor="promoDescription">Promo description (optional)</Label>
+      {/* Promo description */}
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="promoDescription" className={labelCls}>
+          Promo description (optional)
+        </Label>
         <Input
-          id="promoDescription" name="promoDescription"
+          id="promoDescription"
+          name="promoDescription"
           defaultValue={iv.promoDescription}
           placeholder="18 months no interest if paid in full"
+          className={inputCls}
         />
       </div>
 
-      <Button type="submit" disabled={loading}>
+      {/* Submit */}
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full sm:w-[450px] sm:mx-auto bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-60 text-[16px] font-semibold text-white rounded-[10px] transition-colors h-10"
+      >
         {loading ? 'Saving…' : dealId ? 'Save changes' : 'Start tracking'}
-      </Button>
+      </button>
     </form>
   )
 }

@@ -2,7 +2,6 @@ import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { redirect } from 'next/navigation'
 import { format } from 'date-fns'
-import { Button } from '@/components/ui/button'
 
 export default async function BillingPage() {
   const session = await auth()
@@ -12,27 +11,30 @@ export default async function BillingPage() {
   const isPremium = user.subscriptionTier === 'PREMIUM'
 
   return (
-    <div className="max-w-xl">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Billing</h1>
+    <div className="p-4 sm:p-6 lg:p-8">
+      <h2 className="text-[24px] font-bold text-white mb-6">Billing</h2>
 
-      <div className="bg-white border rounded-xl p-6 mb-6">
-        <p className="text-sm text-gray-500 mb-1 uppercase tracking-wide text-xs">Current plan</p>
-        <p className="text-2xl font-bold text-gray-900">{isPremium ? 'Premium' : 'Free'}</p>
+      {/* ── Current plan card ── */}
+      <div className="dz-glass-card rounded-[10px] p-4 flex flex-col gap-4 mb-6">
+        <span className="text-[14px] text-[#A1B7E7]">Current Plan</span>
+        <span className="text-[40px] font-normal text-white leading-none">
+          {isPremium ? 'Premium' : 'Free'}
+        </span>
         {isPremium && user.subscriptionExpiresAt && (
-          <p className="text-sm text-gray-500 mt-1">
+          <span className="text-[14px] text-[#A1B7E7]">
             Renews {format(user.subscriptionExpiresAt, 'MMMM d, yyyy')}
-          </p>
+          </span>
         )}
         {!isPremium && (
-          <p className="text-sm text-gray-500 mt-1">
+          <span className="text-[14px] text-[#A1B7E7]">
             Track up to 2 active deals. Upgrade for unlimited.
-          </p>
+          </span>
         )}
       </div>
 
       {isPremium ? (
-        <div>
-          <p className="text-sm text-gray-600 mb-3">
+        <div className="flex flex-col gap-4">
+          <p className="text-[16px] text-[#A1B7E7]">
             Manage your subscription, update payment method, or cancel anytime.
           </p>
           <form
@@ -52,17 +54,20 @@ export default async function BillingPage() {
               nav(portalSession.url)
             }}
           >
-            <Button type="submit" variant="outline">
+            <button
+              type="submit"
+              className="border border-[#3B82F6] text-[#3B82F6] bg-transparent hover:bg-[rgba(59,130,246,0.15)] hover:text-white text-[16px] font-semibold px-4 py-2 rounded-[10px] transition-colors"
+            >
               Manage subscription
-            </Button>
+            </button>
           </form>
         </div>
       ) : (
-        <div className="space-y-3">
-          <p className="text-gray-600 text-sm">
+        <div className="flex flex-col gap-4">
+          <p className="text-[16px] text-[#A1B7E7]">
             Upgrade to Premium to track unlimited deals and connect your bank account.
           </p>
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <form
               action={async () => {
                 'use server'
@@ -92,7 +97,12 @@ export default async function BillingPage() {
                 nav(checkoutSession.url!)
               }}
             >
-              <Button type="submit">Upgrade — $29/year</Button>
+              <button
+                type="submit"
+                className="bg-[#2563EB] hover:bg-[#1D4ED8] text-[16px] font-semibold text-white px-4 py-2 rounded-[10px] transition-colors w-full sm:w-auto"
+              >
+                Upgrade to premium — $29/year
+              </button>
             </form>
             <form
               action={async () => {
@@ -123,9 +133,12 @@ export default async function BillingPage() {
                 nav(checkoutSession.url!)
               }}
             >
-              <Button type="submit" variant="outline">
-                $4/month
-              </Button>
+              <button
+                type="submit"
+                className="border border-[#3B82F6] text-[#3B82F6] bg-transparent hover:bg-[rgba(59,130,246,0.15)] hover:text-white text-[16px] font-semibold px-4 py-2 rounded-[10px] transition-colors w-full sm:w-auto"
+              >
+                Upgrade to premium — $4/month
+              </button>
             </form>
           </div>
         </div>
