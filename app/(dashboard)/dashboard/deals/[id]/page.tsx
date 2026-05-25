@@ -122,7 +122,7 @@ export default async function DealDetailPage({ params }: { params: { id: string 
       <div className="dz-glass-card rounded-[10px] p-4 mb-4">
         <h3 className="text-[16px] font-semibold text-white mb-3">Balance history</h3>
         <PayoffChart
-          history={deal.balanceHistory.map((b) => ({
+          history={deal.balanceHistory.map((b: { snapshotDate: Date; balanceCents: number }) => ({
             snapshotDate: b.snapshotDate.toISOString(),
             balanceCents: b.balanceCents,
           }))}
