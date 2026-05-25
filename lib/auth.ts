@@ -2,8 +2,9 @@ import NextAuth from 'next-auth'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import Google from 'next-auth/providers/google'
 import Resend from 'next-auth/providers/resend'
-import { SubscriptionTier } from '@prisma/client'
 import { db } from '@/lib/db'
+
+type SubscriptionTier = 'FREE' | 'PREMIUM'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(db),
