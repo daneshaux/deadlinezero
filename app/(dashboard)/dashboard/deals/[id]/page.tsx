@@ -144,7 +144,7 @@ export default async function DealDetailPage({ params }: { params: { id: string 
         <div className="dz-glass-card rounded-[10px] p-4">
           <h3 className="text-[16px] font-semibold text-white mb-3">Payment history</h3>
           <div className="divide-y divide-[#223661]">
-            {deal.paymentHistory.map((p) => (
+            {deal.paymentHistory.map((p: { id: string; amountCents: number; paymentDate: Date; note: string | null }) => (
               <div key={p.id} className="py-3 flex justify-between items-center">
                 <div className="flex items-baseline gap-2">
                   <span className="text-[16px] font-semibold text-white">
