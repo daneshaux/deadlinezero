@@ -12,6 +12,13 @@ interface CalcResult {
   daysRemaining: number
 }
 
+// Shared input/label classes matching the DZ dark design system
+const inputCls =
+  'bg-transparent border-[#223661] text-white placeholder:text-[#A1B7E7]/50 ' +
+  'focus-visible:ring-[#2563EB] focus-visible:border-[#2563EB] rounded-[10px] ' +
+  '[color-scheme:dark]'
+const labelCls = 'text-[16px] font-normal text-white'
+
 export function CalculatorForm() {
   const [result, setResult] = useState<CalcResult | null>(null)
   const [loading, setLoading] = useState(false)
@@ -24,6 +31,7 @@ export function CalculatorForm() {
     promoDeadline: '',
   })
 
+  // ── All calculation logic preserved verbatim ──────────────────────────────
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setLoading(true)
@@ -68,94 +76,153 @@ export function CalculatorForm() {
 
     setLoading(false)
   }
+  // ─────────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="space-y-6">
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="originalAmount">Original financed amount ($)</Label>
+    <div className="flex flex-col gap-6">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+
+        {/* Row 1 — Original amount + Current balance (2-col on sm+) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="originalAmount" className={labelCls}>
+              Original financed amount ($)
+            </Label>
             <Input
-              id="originalAmount" type="number" step="0.01" min="0.01" required
+              id="originalAmount"
+              type="number"
+              step="0.01"
+              min="0.01"
+              required
               value={formValues.originalAmount}
               onChange={(e) => setFormValues((v) => ({ ...v, originalAmount: e.target.value }))}
               placeholder="1200.00"
+              className={inputCls}
             />
           </div>
-          <div>
-            <Label htmlFor="currentBalance">Current balance ($)</Label>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="currentBalance" className={labelCls}>
+              Current balance ($)
+            </Label>
             <Input
-              id="currentBalance" type="number" step="0.01" min="0" required
+              id="currentBalance"
+              type="number"
+              step="0.01"
+              min="0"
+              required
               value={formValues.currentBalance}
               onChange={(e) => setFormValues((v) => ({ ...v, currentBalance: e.target.value }))}
               placeholder="840.00"
+              className={inputCls}
             />
           </div>
         </div>
 
-        <div>
-          <Label htmlFor="apr">APR (%)</Label>
+        {/* Row 2 — APR (full width) */}
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="apr" className={labelCls}>
+            APR (%)
+          </Label>
           <Input
-            id="apr" type="number" step="0.01" min="0.01" max="100" required
+            id="apr"
+            type="number"
+            step="0.01"
+            min="0.01"
+            max="100"
+            required
             value={formValues.apr}
             onChange={(e) => setFormValues((v) => ({ ...v, apr: e.target.value }))}
             placeholder="26.99"
+            className={inputCls}
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="promoStartDate">Purchase date</Label>
+        {/* Row 3 — Purchase date + Promo deadline (2-col on sm+) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="promoStartDate" className={labelCls}>
+              Purchase date
+            </Label>
             <Input
-              id="promoStartDate" type="date" required
+              id="promoStartDate"
+              type="date"
+              required
               value={formValues.promoStartDate}
               onChange={(e) => setFormValues((v) => ({ ...v, promoStartDate: e.target.value }))}
+              className={inputCls}
             />
           </div>
-          <div>
-            <Label htmlFor="promoDeadline">Promo deadline</Label>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="promoDeadline" className={labelCls}>
+              Promo deadline
+            </Label>
             <Input
-              id="promoDeadline" type="date" required
+              id="promoDeadline"
+              type="date"
+              required
               value={formValues.promoDeadline}
               onChange={(e) => setFormValues((v) => ({ ...v, promoDeadline: e.target.value }))}
+              className={inputCls}
             />
           </div>
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-md p-3 text-sm text-red-700">
+          <div className="bg-red-900/30 border border-red-500/40 rounded-[10px] px-4 py-3 text-[14px] text-red-300">
             {error}
           </div>
         )}
 
-        <Button type="submit" disabled={loading} className="w-full" size="lg">
+        {/*
+         * Button: full-width on mobile, 450px centered on sm+.
+         * 450px matches Figma button width on tablet/desktop frames.
+         */}
+        <Button
+          type="submit"
+          disabled={loading}
+          className="w-full sm:w-[450px] sm:mx-auto bg-[#2563EB] hover:bg-[#1D4ED8] text-[16px] font-semibold text-white rounded-[10px] transition-colors h-10 disabled:opacity-60"
+        >
           {loading ? 'Calculating…' : 'Calculate my exposure'}
         </Button>
       </form>
 
+      {/* Results box — existing structure preserved, dark-system styling applied */}
       {result && (
-        <div className="bg-white rounded-xl border p-6 space-y-4 shadow-sm">
+        <div className="dz-glass-card rounded-[10px] p-6 flex flex-col gap-6">
           <div className="grid grid-cols-3 gap-4 text-center">
-            <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Monthly payment needed</p>
-              <p className="text-3xl font-bold text-blue-600">
+            <div className="flex flex-col gap-1">
+              <p className="text-[12px] font-normal text-[#A1B7E7] uppercase tracking-wide">
+                Monthly payment needed
+              </p>
+              <p className="text-[28px] font-bold text-[#3B82F6]">
                 ${(result.monthlyPaymentNeededCents / 100).toFixed(2)}
               </p>
             </div>
-            <div>
-              <p className="text-xs text-red-500 uppercase tracking-wide mb-1">If you miss the deadline</p>
-              <p className="text-3xl font-bold text-red-600">
+            <div className="flex flex-col gap-1">
+              <p className="text-[12px] font-normal text-red-400 uppercase tracking-wide">
+                If you miss the deadline
+              </p>
+              <p className="text-[28px] font-bold text-red-400">
                 ${(result.retroInterestExposureCents / 100).toFixed(2)}
               </p>
             </div>
-            <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Days remaining</p>
-              <p className={`text-3xl font-bold ${result.daysRemaining <= 30 ? 'text-red-600' : ''}`}>
+            <div className="flex flex-col gap-1">
+              <p className="text-[12px] font-normal text-[#A1B7E7] uppercase tracking-wide">
+                Days remaining
+              </p>
+              <p
+                className={`text-[28px] font-bold ${
+                  result.daysRemaining <= 30 ? 'text-red-400' : 'text-white'
+                }`}
+              >
                 {result.daysRemaining > 0 ? result.daysRemaining : 'Overdue'}
               </p>
             </div>
           </div>
-          <Button asChild className="w-full" size="lg">
+          <Button
+            asChild
+            className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-[16px] font-semibold text-white rounded-[10px] transition-colors h-10"
+          >
             <Link href="/login">Track this deal and get alerts →</Link>
           </Button>
         </div>

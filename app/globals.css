@@ -10,12 +10,60 @@
   }
 }
 
+@layer components {
+  /*
+   * .dz-glass-card — premium glass surface, values derived from Figma parameters:
+   *
+   *   light angle   –45° → CSS 135deg  (top-left corner is the light source)
+   *   light intensity 80% → highlight color at rgba(161,183,231, 0.12)
+   *                         (text-secondary hue; 0.12 ≈ 80% of a 0.15 reference max)
+   *   splay          87%  → gradient reaches transparent at the 87% position,
+   *                         meaning the lit surface covers most of the card face
+   *                         before falling off cleanly at the bottom-right corner
+   *   dispersion     55   → a mid-stop at 50% using near-white (not the same blue)
+   *                         simulates chromatic spread as light crosses the surface
+   *   frost           8   → backdrop-filter: blur(1px) — 8/100 of a ~12px max;
+   *                         just enough to signal glass material with zero smear
+   *   depth          52   → manifests as the outer shadow + inset rim highlight
+   *                         intensity (0.12 for shadow, 0.08 for inset)
+   *
+   * Background is layered: lighting gradient on top of the glass-blue token,
+   * so the base fill is always consistent with the design system.
+   */
+  .dz-glass-card {
+    background:
+      linear-gradient(
+        135deg,
+        rgba(161, 183, 231, 0.12) 0%,
+        rgba(255, 255, 255, 0.03) 50%,
+        transparent 87%
+      ),
+      var(--dz-glass-blue);
+    border: 1px solid rgba(161, 183, 231, 0.12);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 4px 16px rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
+  }
+}
+
 @layer base {
   .theme {
     --font-heading: var(--font-sans);
     --font-sans: var(--font-sans);
   }
   :root {
+    /* DeadlineZero design system tokens */
+    --dz-bg-primary: #0B1020;
+    --dz-accent-blue: #2563EB;
+    --dz-accent-blue-light: #3B82F6;
+    --dz-success-green: #10B981;
+    --dz-text-primary: #FFFFFF;
+    --dz-text-secondary: #A1B7E7;
+    --dz-glass-blue: rgba(96, 100, 113, 0.08);
+    --dz-glass-blue-light: rgba(37, 99, 235, 0.12);
+    --dz-border-blue: #223661;
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
     --card: oklch(1 0 0);
