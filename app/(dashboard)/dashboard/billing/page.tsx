@@ -1,11 +1,43 @@
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { stripe } from '@/lib/stripe'
 import { redirect } from 'next/navigation'
 import { format } from 'date-fns'
 
-export default async function BillingPage() {
+export default async function BillingPage({
+  searchParams,
+}: {
+  searchParams: { success?: string }
+}) {
   const session = await auth()
   if (!session?.user?.id) redirect('/login')
+
+  // When the user returns from a successful Stripe checkout, sync their subscription
+  // status directly from Stripe. This is a reliable backup to the webhook, which may
+  // be delayed or misconfigured in dev environments.
+  if (searchParams?.success === '1') {
+    const candidate = await db.user.findUnique({ where: { id: session.user.id } })
+    if (candidate?.stripeCustomerId && candidate.subscriptionTier === 'FREE') {
+      const subs = await stripe.subscriptions.list({
+        customer: candidate.stripeCustomerId,
+        status: 'active',
+        limit: 1,
+      })
+      if (subs.data.length > 0) {
+        const sub = subs.data[0]
+        await db.user.update({
+          where: { id: session.user.id },
+          data: {
+            subscriptionTier: 'PREMIUM',
+            stripeSubscriptionId: sub.id,
+            subscriptionExpiresAt: sub.items.data[0]?.current_period_end
+              ? new Date(sub.items.data[0].current_period_end * 1000)
+              : null,
+          },
+        })
+      }
+    }
+  }
 
   const user = await db.user.findUniqueOrThrow({ where: { id: session.user.id } })
   const isPremium = user.subscriptionTier === 'PREMIUM'
@@ -93,6 +125,7 @@ export default async function BillingPage() {
                   line_items: [{ price: process.env.STRIPE_ANNUAL_PRICE_ID!, quantity: 1 }],
                   success_url: `${process.env.NEXTAUTH_URL}/dashboard/billing?success=1`,
                   cancel_url: `${process.env.NEXTAUTH_URL}/pricing`,
+                  metadata: { userId: dbUser.id },
                 })
                 nav(checkoutSession.url!)
               }}
@@ -129,6 +162,7 @@ export default async function BillingPage() {
                   line_items: [{ price: process.env.STRIPE_MONTHLY_PRICE_ID!, quantity: 1 }],
                   success_url: `${process.env.NEXTAUTH_URL}/dashboard/billing?success=1`,
                   cancel_url: `${process.env.NEXTAUTH_URL}/pricing`,
+                  metadata: { userId: dbUser.id },
                 })
                 nav(checkoutSession.url!)
               }}

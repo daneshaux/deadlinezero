@@ -18,25 +18,43 @@ export async function POST(req: NextRequest) {
 
   if (event.type === 'checkout.session.completed') {
     const checkoutSession = event.data.object as Stripe.Checkout.Session
-    if (checkoutSession.mode === 'subscription' && checkoutSession.customer && checkoutSession.subscription) {
+    if (checkoutSession.mode === 'subscription' && checkoutSession.subscription) {
       const subscription = await stripe.subscriptions.retrieve(
         checkoutSession.subscription as string
       )
       const periodEnd = subscription.items.data[0]?.current_period_end
-      await db.user.update({
-        where: { stripeCustomerId: checkoutSession.customer as string },
-        data: {
-          subscriptionTier: 'PREMIUM',
-          stripeSubscriptionId: subscription.id,
-          subscriptionExpiresAt: periodEnd ? new Date(periodEnd * 1000) : null,
-        },
-      })
+
+      const updateData = {
+        subscriptionTier: 'PREMIUM' as const,
+        stripeSubscriptionId: subscription.id,
+        subscriptionExpiresAt: periodEnd ? new Date(periodEnd * 1000) : null,
+      }
+
+      // Primary: look up by stripeCustomerId (set before checkout creation)
+      if (checkoutSession.customer) {
+        const result = await db.user.updateMany({
+          where: { stripeCustomerId: checkoutSession.customer as string },
+          data: updateData,
+        })
+        // Fallback: if no row matched, use metadata.userId embedded at session creation
+        if (result.count === 0 && checkoutSession.metadata?.userId) {
+          await db.user.update({
+            where: { id: checkoutSession.metadata.userId },
+            data: { ...updateData, stripeCustomerId: checkoutSession.customer as string },
+          })
+        }
+      } else if (checkoutSession.metadata?.userId) {
+        await db.user.update({
+          where: { id: checkoutSession.metadata.userId },
+          data: updateData,
+        })
+      }
     }
   }
 
   if (event.type === 'customer.subscription.deleted') {
     const subscription = event.data.object as Stripe.Subscription
-    await db.user.update({
+    await db.user.updateMany({
       where: { stripeCustomerId: subscription.customer as string },
       data: {
         subscriptionTier: 'FREE',
@@ -49,7 +67,7 @@ export async function POST(req: NextRequest) {
   if (event.type === 'customer.subscription.updated') {
     const subscription = event.data.object as Stripe.Subscription
     const periodEnd = subscription.items.data[0]?.current_period_end
-    await db.user.update({
+    await db.user.updateMany({
       where: { stripeCustomerId: subscription.customer as string },
       data: {
         subscriptionExpiresAt: periodEnd ? new Date(periodEnd * 1000) : null,

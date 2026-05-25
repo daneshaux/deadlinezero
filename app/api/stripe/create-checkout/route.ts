@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
     line_items: [{ price: priceId, quantity: 1 }],
     success_url: `${process.env.NEXTAUTH_URL}/dashboard/billing?success=1`,
     cancel_url: `${process.env.NEXTAUTH_URL}/pricing`,
+    metadata: { userId: user.id },
   })
 
   return NextResponse.json({ checkoutUrl: checkoutSession.url })

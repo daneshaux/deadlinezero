@@ -31,7 +31,8 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({
     monthlyPaymentNeededCents: calculateMonthlyPaymentNeeded(currentBalanceCents, deadline, today),
-    retroInterestExposureCents: calculateRetroInterestExposure(originalPurchaseAmountCents, regularAprBps, startDate, today),
+    // Project to the deadline date — that's the full retroactive charge the lender applies if missed
+    retroInterestExposureCents: calculateRetroInterestExposure(originalPurchaseAmountCents, regularAprBps, startDate, deadline),
     daysRemaining: daysUntilDeadline(deadline, today),
   })
 }
