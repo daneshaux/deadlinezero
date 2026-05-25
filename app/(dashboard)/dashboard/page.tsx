@@ -16,7 +16,8 @@ export default async function DashboardPage() {
   ])
 
   const totalRetroExposure = deals.reduce(
-    (sum, d) => sum + (d.cachedRetroInterestExposureCents ?? 0),
+    (sum: number, d: { cachedRetroInterestExposureCents: number | null }) =>
+      sum + (d.cachedRetroInterestExposureCents ?? 0),
     0
   )
 
