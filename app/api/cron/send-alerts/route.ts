@@ -8,7 +8,7 @@ import {
   calculateRetroInterestExposure,
   daysUntilDeadline,
 } from '@/lib/calculations'
-import { AlertType } from '@prisma/client'
+type AlertType = 'DAYS_90' | 'DAYS_60' | 'DAYS_30' | 'DAYS_14' | 'DAYS_7'
 
 const ALERT_THRESHOLDS: Record<number, AlertType> = {
   90: 'DAYS_90',
