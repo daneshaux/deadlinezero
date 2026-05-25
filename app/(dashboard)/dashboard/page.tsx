@@ -1,8 +1,7 @@
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import Link from 'next/link'
-import { DealCard } from '@/components/deals/deal-card'
-import type { PromoDeal } from '@prisma/client'
+import { DealCard, type DealSummary } from '@/components/deals/deal-card'
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -17,7 +16,7 @@ export default async function DashboardPage() {
   ])
 
   const totalRetroExposure = deals.reduce(
-    (sum: number, d: PromoDeal) => sum + (d.cachedRetroInterestExposureCents ?? 0),
+    (sum: number, d: DealSummary) => sum + (d.cachedRetroInterestExposureCents ?? 0),
     0
   )
 
@@ -87,7 +86,7 @@ export default async function DashboardPage() {
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            {deals.map((deal: PromoDeal) => (
+            {deals.map((deal: DealSummary) => (
               <DealCard key={deal.id} deal={deal} />
             ))}
           </div>

@@ -1,5 +1,15 @@
 import Link from 'next/link'
-import type { PromoDeal } from '@prisma/client'
+
+export interface DealSummary {
+  id: string
+  merchantName: string
+  description: string | null
+  currentBalanceCents: number
+  originalPurchaseAmountCents: number
+  cachedMonthlyPaymentNeededCents: number | null
+  cachedRetroInterestExposureCents: number | null
+  cachedDaysRemaining: number | null
+}
 
 function urgencyPill(daysRemaining: number | null) {
   if (daysRemaining === null || daysRemaining === undefined) return null
@@ -28,7 +38,7 @@ function urgencyPill(daysRemaining: number | null) {
   )
 }
 
-export function DealCard({ deal }: { deal: PromoDeal }) {
+export function DealCard({ deal }: { deal: DealSummary }) {
   const balance = (deal.currentBalanceCents / 100).toFixed(2)
   const monthly =
     deal.cachedMonthlyPaymentNeededCents != null
