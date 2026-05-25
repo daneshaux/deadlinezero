@@ -10,6 +10,8 @@ import {
 } from '@/lib/calculations'
 type AlertType = 'DAYS_90' | 'DAYS_60' | 'DAYS_30' | 'DAYS_14' | 'DAYS_7'
 
+type AlertRecord = { alertType: string; sentAt: Date | null }
+
 const ALERT_THRESHOLDS: Record<number, AlertType> = {
   90: 'DAYS_90',
   60: 'DAYS_60',
@@ -46,7 +48,7 @@ export async function GET(req: NextRequest) {
 
     const alertType = ALERT_THRESHOLDS[qualifyingThreshold]
 
-    const alreadySent = deal.alerts.some((a) => a.alertType === alertType && a.sentAt !== null)
+    const alreadySent = deal.alerts.some((a: AlertRecord) => a.alertType === alertType && a.sentAt !== null)
     if (alreadySent) continue
 
     const monthlyPaymentNeededCents = calculateMonthlyPaymentNeeded(
