@@ -39,8 +39,8 @@ export async function GET(req: NextRequest) {
 
     // Find the smallest user-configured threshold that this deal qualifies for
     const qualifyingThreshold = deal.user.alertLeadDays
-      .filter((d) => days <= d && ALERT_THRESHOLDS[d] !== undefined)
-      .sort((a, b) => a - b)[0]
+      .filter((d: number) => days <= d && ALERT_THRESHOLDS[d] !== undefined)
+      .sort((a: number, b: number) => a - b)[0]
 
     if (qualifyingThreshold === undefined) continue
 
