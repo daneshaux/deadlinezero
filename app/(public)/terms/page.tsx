@@ -195,9 +195,9 @@ export default function TermsPage() {
           <section className="flex flex-col gap-3">
             <h2 className="text-[20px] font-bold text-white">13. Contact Us</h2>
             <p>
-              If you have questions about these Terms, please contact us at{' '}
-              <a href="mailto:legal@deadlinezero.com" className="text-[#3B82F6] hover:underline">
-                legal@deadlinezero.com
+              For questions about these Terms, contact Danesha at{' '}
+              <a href="mailto:daneshayvette@gmail.com" className="text-[#3B82F6] hover:underline">
+                daneshayvette@gmail.com
               </a>.
             </p>
           </section>

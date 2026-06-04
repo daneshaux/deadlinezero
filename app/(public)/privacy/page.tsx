@@ -123,9 +123,9 @@ export default function PrivacyPage() {
               <li>Disconnect your bank account (Plaid) at any time</li>
             </ul>
             <p>
-              To exercise these rights, contact us at{' '}
-              <a href="mailto:privacy@deadlinezero.com" className="text-[#3B82F6] hover:underline">
-                privacy@deadlinezero.com
+              To exercise these rights, reach out to Danesha directly at{' '}
+              <a href="mailto:daneshayvette@gmail.com" className="text-[#3B82F6] hover:underline">
+                daneshayvette@gmail.com
               </a>.
             </p>
           </section>
@@ -160,9 +160,9 @@ export default function PrivacyPage() {
           <section className="flex flex-col gap-3">
             <h2 className="text-[20px] font-bold text-white">11. Contact Us</h2>
             <p>
-              If you have questions about this Privacy Policy, please contact us at{' '}
-              <a href="mailto:privacy@deadlinezero.com" className="text-[#3B82F6] hover:underline">
-                privacy@deadlinezero.com
+              For questions about this Privacy Policy, contact Danesha at{' '}
+              <a href="mailto:daneshayvette@gmail.com" className="text-[#3B82F6] hover:underline">
+                daneshayvette@gmail.com
               </a>.
             </p>
           </section>
