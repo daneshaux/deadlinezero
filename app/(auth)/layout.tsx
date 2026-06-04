@@ -1,4 +1,5 @@
 import { Noto_Sans } from 'next/font/google'
+import { SiteFooter } from '@/components/layout/site-footer'
 
 const notoSans = Noto_Sans({
   subsets: ['latin'],
@@ -7,5 +8,10 @@ const notoSans = Noto_Sans({
 })
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
-  return <div className={notoSans.className}>{children}</div>
+  return (
+    <div className={`${notoSans.className} flex flex-col min-h-screen`}>
+      {children}
+      <SiteFooter />
+    </div>
+  )
 }

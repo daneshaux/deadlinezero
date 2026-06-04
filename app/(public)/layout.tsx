@@ -1,4 +1,5 @@
 import { Noto_Sans } from 'next/font/google'
+import { SiteFooter } from '@/components/layout/site-footer'
 
 const notoSans = Noto_Sans({
   subsets: ['latin'],
@@ -7,7 +8,10 @@ const notoSans = Noto_Sans({
 })
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
-  // Wrap in a div so Noto Sans cascades to all public pages without
-  // touching the root layout or dashboard pages.
-  return <div className={notoSans.className}>{children}</div>
+  return (
+    <div className={`${notoSans.className} flex flex-col min-h-screen`}>
+      {children}
+      <SiteFooter />
+    </div>
+  )
 }

@@ -1,8 +1,6 @@
 import Link from 'next/link'
 import { signIn } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { SiteNav } from '@/components/layout/site-nav'
 
 export const metadata = {
@@ -12,7 +10,7 @@ export const metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-[#0B1020]">
+    <div className="flex-1 bg-[#0B1020]">
       <SiteNav />
 
       {/*
@@ -26,54 +24,13 @@ export default function LoginPage() {
          * Mobile/tablet: full width, capped at 500px, centered via mx-auto.
          * Desktop: fixed 500px, left-aligned (mx-0).
          */}
-        <div className="flex flex-col justify-center w-full max-w-[500px] mx-auto lg:mx-0 lg:w-[500px] shrink-0 py-10 lg:py-[80px]">
+        <div className="flex flex-col justify-center w-full max-w-[500px] mx-auto lg:mx-0 lg:w-[500px] shrink-0 py-10 lg:pt-0 lg:pb-[200px]">
           {/* Heading block */}
           <div className="flex flex-col gap-2 mb-10">
             <h2 className="text-[24px] font-bold text-white">Sign In</h2>
             <p className="text-[16px] font-normal text-[#A1B7E7]">
-              Get a magic link sent to your email — no password needed.
+              Sign in to track your deferred interest deals.
             </p>
-          </div>
-
-          {/* Magic link form */}
-          <form
-            action={async (formData: FormData) => {
-              'use server'
-              await signIn('resend', { email: formData.get('email') as string, redirectTo: '/dashboard' })
-            }}
-            className="flex flex-col gap-4"
-          >
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="email" className="text-[14px] font-normal text-white">
-                Email Address
-              </Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                required
-                placeholder="you@example.com"
-                className="bg-transparent border-[#223661] text-white placeholder:text-[#A1B7E7]/50 focus-visible:ring-[#3B82F6] focus-visible:border-[#3B82F6] rounded-[10px]"
-              />
-            </div>
-            <Button
-              type="submit"
-              className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-[16px] font-semibold text-white rounded-[10px] transition-colors h-10"
-            >
-              Send magic link
-            </Button>
-          </form>
-
-          {/* OR divider — white lines + white label for legibility on dark bg */}
-          <div className="relative my-8">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/20" />
-            </div>
-            <div className="relative flex justify-center">
-              <span className="px-3 bg-[#0B1020] text-[14px] font-normal text-white">
-                OR
-              </span>
-            </div>
           </div>
 
           {/* Google form — hover turns text white, bg gets subtle blue tint */}
